@@ -1,0 +1,16 @@
+[project]
+name = "afac-agent"
+version = "0.1.0"
+description = "AFAC 2026 赛道三：稀疏反馈自动化实验 Agent（A榜）"
+requires-python = ">=3.12"
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "pandas>=2.2",
+  "scikit-learn>=1.4",
+  "pyyaml>=6.0.1",
+]
+
+[tool.ruff]
+line-length = 100
+

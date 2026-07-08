@@ -1,0 +1,48 @@
+run:
+  seed: 42
+  output_dir: outputs
+  experiment:
+    max_trials: 6
+    patience: 3
+
+data:
+  classification:
+    npz_path: data/classification_a/A1.npz
+    sample_submission_path: data/classification_a/sample_submission.csv
+    val_ratio: 0.1
+  recommendation:
+    train_csv_path: data/recommendation_a/train.csv
+    test_csv_path: data/recommendation_a/test.csv
+    user_csv_path: data/recommendation_a/user.csv
+    item_csv_path: data/recommendation_a/item.csv
+    sample_submission_path: data/recommendation_a/sample_submission.csv
+    val_ratio: 0.1
+
+search_space:
+  classification:
+    candidates:
+      - kind: label_propagation
+        max_iter: 50
+        alpha: 0.8
+      - kind: label_propagation
+        max_iter: 100
+        alpha: 0.9
+      - kind: logistic_regression
+        c: 1.0
+        max_iter: 200
+      - kind: logistic_regression
+        c: 4.0
+        max_iter: 300
+  recommendation:
+    candidates:
+      - kind: popularity
+      - kind: cooc_popularity
+        cooc_window: 50
+        cooc_weight: 1.0
+        popularity_weight: 0.2
+
+submission:
+  a1_filename: A1.csv
+  a2_filename: A2.csv
+  zip_filename: prediction.zip
+
