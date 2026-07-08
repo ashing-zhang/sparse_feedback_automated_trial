@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 import logging
 import random
+from typing import Any
 
 import numpy as np
 
@@ -18,7 +19,6 @@ from afac_agent.domain.ports.dataset_loader import DatasetLoader
 from afac_agent.domain.models.datasets import ClassificationDataset, RecommendationDataset
 from afac_agent.domain.ports.experiment_store import ExperimentStore
 from afac_agent.domain.ports.submission_writer import SubmissionWriter
-from afac_agent.infrastructure.algorithms.factory import (
 from afac_agent.infrastructure.algorithms.factory import (
     build_classification_algorithm,
     build_recommendation_algorithm,
