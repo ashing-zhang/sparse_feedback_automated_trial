@@ -16,7 +16,7 @@ import numpy as np
 from afac_agent.application.services.memory_system import MemorySystem
 from afac_agent.application.services.task_analyzer import TaskAnalyzer
 from afac_agent.application.services.splitters import random_split_row_indices, stratified_split_indices
-from afac_agent.domain.models.agent_state import TaskType
+from afac_agent.domain.models.agent_state import AgentState, TaskType
 from afac_agent.domain.models.datasets import ClassificationDataset, RecommendationDataset
 from afac_agent.domain.ports.experiment_policy import ExperimentPolicy
 from afac_agent.domain.ports.experiment_store import ExperimentStore
@@ -115,7 +115,7 @@ class ExperimentController:
         for round_id in range(1, total_rounds + 1):
             rounds_left = total_rounds - round_id + 1
             history = _merge_history(long_term, local_history, limit=self.config.memory.recent_k)
-            state = self.memory.build_state(
+            state = AgentState.from_context(
                 task_type=task_type,
                 dataset_profile=dataset_profile,
                 experiment_history=history,

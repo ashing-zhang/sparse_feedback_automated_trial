@@ -23,3 +23,24 @@ class AgentState:
     remaining_budget: dict[str, Any]
     failure_cases: list[str]
 
+    @classmethod
+    def from_context(
+        cls,
+        *,
+        task_type: TaskType,
+        dataset_profile: dict[str, Any],
+        experiment_history: list[dict[str, Any]],
+        best_solution: dict[str, Any] | None,
+        remaining_budget: dict[str, Any],
+        failure_cases: list[str],
+    ) -> "AgentState":
+        """从上下文构建 AgentState。"""
+        return cls(
+            task_type=task_type,
+            dataset_profile=dict(dataset_profile),
+            experiment_history=list(experiment_history),
+            best_solution=dict(best_solution) if best_solution is not None else None,
+            remaining_budget=dict(remaining_budget),
+            failure_cases=list(failure_cases),
+        )
+
