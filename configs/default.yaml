@@ -6,14 +6,14 @@ run:
     patience: 3
 
 llm:
-  enabled: false
+  enabled: true
   provider: openai_compatible
-  base_url: https://api.openai.com/v1
-  api_key_env: AFAC_LLM_API_KEY
-  model: ""
+  base_url: https://llm-xur4gfd4busltusy.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+  api_key_env: LLM_API_KEY
+  model: "qwen-plus"
   temperature: 0.2
   max_tokens: 800
-  timeout_seconds: 60
+  timeout_seconds: 120
   max_retries: 2
 
 agent_prompts:
