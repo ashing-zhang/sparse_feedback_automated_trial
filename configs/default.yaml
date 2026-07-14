@@ -2,7 +2,7 @@ run:
   seed: 42
   output_dir: outputs
   experiment:
-    max_trials: 6
+    max_trials: 10
     patience: 3
 
 llm:
