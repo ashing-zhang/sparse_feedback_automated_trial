@@ -5,6 +5,35 @@ run:
     max_trials: 6
     patience: 3
 
+llm:
+  enabled: false
+  provider: openai_compatible
+  base_url: https://api.openai.com/v1
+  api_key_env: AFAC_LLM_API_KEY
+  model: ""
+  temperature: 0.2
+  max_tokens: 800
+  timeout_seconds: 60
+  max_retries: 2
+
+agent_prompts:
+  planner_path: configs/prompts/planner.md
+  scientist_path: configs/prompts/scientist.md
+  engineer_path: configs/prompts/engineer.md
+  reviewer_path: configs/prompts/reviewer.md
+
+memory:
+  mode: jsonl
+  recent_k: 30
+  long_term_k: 200
+
+controller:
+  explore_ratio: 0.3
+  optimize_ratio: 0.5
+  stabilize_ratio: 0.2
+  improvement_threshold: 1.0e-6
+  max_rounds:
+
 data:
   classification:
     npz_path: data/classification_a/A1.npz
@@ -33,6 +62,19 @@ search_space:
       - kind: logistic_regression
         c: 4.0
         max_iter: 300
+    mutation_rules:
+      label_propagation:
+        alpha:
+          min: 0.7
+          max: 0.95
+          step: 0.05
+        max_iter:
+          values: [50, 100, 150, 200]
+      logistic_regression:
+        c:
+          values: [0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
+        max_iter:
+          values: [100, 200, 300, 500]
   recommendation:
     candidates:
       - kind: popularity
@@ -40,9 +82,16 @@ search_space:
         cooc_window: 50
         cooc_weight: 1.0
         popularity_weight: 0.2
+    mutation_rules:
+      cooc_popularity:
+        cooc_window:
+          values: [10, 30, 50, 80, 120]
+        cooc_weight:
+          values: [0.5, 1.0, 1.5, 2.0]
+        popularity_weight:
+          values: [0.0, 0.1, 0.2, 0.4, 0.6]
 
 submission:
   a1_filename: A1.csv
   a2_filename: A2.csv
   zip_filename: prediction.zip
-

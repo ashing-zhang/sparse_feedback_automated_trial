@@ -20,6 +20,51 @@ class ExperimentConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class LLMConfig:
+    """LLM 配置（OpenAI Compatible）。"""
+
+    enabled: bool
+    provider: str
+    base_url: str
+    api_key_env: str
+    model: str
+    temperature: float
+    max_tokens: int
+    timeout_seconds: float
+    max_retries: int
+
+
+@dataclass(frozen=True, slots=True)
+class AgentPromptsConfig:
+    """多角色 Agent Prompt 配置。"""
+
+    planner_path: Path
+    scientist_path: Path
+    engineer_path: Path
+    reviewer_path: Path
+
+
+@dataclass(frozen=True, slots=True)
+class MemoryConfig:
+    """实验记忆系统配置。"""
+
+    mode: str
+    recent_k: int
+    long_term_k: int
+
+
+@dataclass(frozen=True, slots=True)
+class ControllerConfig:
+    """串行优化控制器配置。"""
+
+    explore_ratio: float
+    optimize_ratio: float
+    stabilize_ratio: float
+    improvement_threshold: float
+    max_rounds: int | None
+
+
+@dataclass(frozen=True, slots=True)
 class RunConfig:
     """运行配置。"""
 
@@ -63,6 +108,8 @@ class SearchSpaceConfig:
 
     classification_candidates: list[dict[str, Any]]
     recommendation_candidates: list[dict[str, Any]]
+    classification_mutation_rules: dict[str, Any]
+    recommendation_mutation_rules: dict[str, Any]
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,4 +129,7 @@ class AppConfig:
     data: DataConfig
     search_space: SearchSpaceConfig
     submission: SubmissionConfig
-
+    llm: LLMConfig
+    agent_prompts: AgentPromptsConfig
+    memory: MemoryConfig
+    controller: ControllerConfig

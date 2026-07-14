@@ -15,3 +15,5 @@ class ExperimentStore(Protocol):
     def append(self, record: dict[str, Any]) -> None:
         """追加一条实验记录。"""
 
+    def read_recent(self, limit: int) -> list[dict[str, Any]]:
+        """读取最近若干条实验记录（按写入顺序从新到旧）。"""

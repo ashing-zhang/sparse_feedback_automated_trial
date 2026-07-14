@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from collections import deque
 import json
 import logging
 
@@ -31,3 +32,23 @@ class JsonlExperimentStore(ExperimentStore):
             f.write(line + "\n")
         logger.info("Experiment record appended: %s", self.path)
 
+    def read_recent(self, limit: int) -> list[dict[str, Any]]:
+        """读取最近若干条实验记录（按写入顺序从新到旧）。"""
+        if limit <= 0:
+            return []
+        if not self.path.exists():
+            return []
+
+        buf: deque[dict[str, Any]] = deque(maxlen=limit)
+        with self.path.open("r", encoding="utf-8") as f:
+            for line in f:
+                raw = line.strip()
+                if not raw:
+                    continue
+                try:
+                    obj = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(obj, dict):
+                    buf.append(obj)
+        return list(reversed(buf))

@@ -10,6 +10,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from afac_agent.infrastructure.config.schema import (
+    AgentPromptsConfig,
     AppConfig,
     ClassificationDataConfig,
     DataConfig,
@@ -44,7 +45,14 @@ def resolve_paths(config: AppConfig, base_dir: Path) -> AppConfig:
     )
 
     resolved_data = DataConfig(classification=resolved_cls, recommendation=resolved_rec)
-    return replace(config, run=resolved_run, data=resolved_data)
+    prompts = config.agent_prompts
+    resolved_prompts = AgentPromptsConfig(
+        planner_path=_resolve_path(prompts.planner_path, base_dir),
+        scientist_path=_resolve_path(prompts.scientist_path, base_dir),
+        engineer_path=_resolve_path(prompts.engineer_path, base_dir),
+        reviewer_path=_resolve_path(prompts.reviewer_path, base_dir),
+    )
+    return replace(config, run=resolved_run, data=resolved_data, agent_prompts=resolved_prompts)
 
 
 def _resolve_path(path: Path, base_dir: Path) -> Path:
@@ -52,4 +60,3 @@ def _resolve_path(path: Path, base_dir: Path) -> Path:
     if path.is_absolute():
         return path
     return (base_dir / path).resolve()
-
