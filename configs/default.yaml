@@ -62,6 +62,18 @@ search_space:
       - kind: logistic_regression
         c: 4.0
         max_iter: 300
+      - kind: graphsage
+        hidden_dim: 64
+        dropout: 0.5
+        learning_rate: 0.01
+        weight_decay: 5.0e-4
+        epochs: 200
+      - kind: gcn
+        hidden_dim: 64
+        dropout: 0.5
+        learning_rate: 0.01
+        weight_decay: 5.0e-4
+        epochs: 200
     mutation_rules:
       label_propagation:
         alpha:
@@ -75,6 +87,32 @@ search_space:
           values: [0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
         max_iter:
           values: [100, 200, 300, 500]
+      graphsage:
+        hidden_dim:
+          values: [32, 64, 128]
+        dropout:
+          min: 0.0
+          max: 0.7
+          step: 0.1
+        learning_rate:
+          values: [0.001, 0.003, 0.01]
+        weight_decay:
+          values: [0.0, 5.0e-4, 1.0e-3]
+        epochs:
+          values: [100, 200, 300]
+      gcn:
+        hidden_dim:
+          values: [32, 64, 128]
+        dropout:
+          min: 0.0
+          max: 0.7
+          step: 0.1
+        learning_rate:
+          values: [0.001, 0.003, 0.01]
+        weight_decay:
+          values: [0.0, 5.0e-4, 1.0e-3]
+        epochs:
+          values: [100, 200, 300]
   recommendation:
     candidates:
       - kind: popularity

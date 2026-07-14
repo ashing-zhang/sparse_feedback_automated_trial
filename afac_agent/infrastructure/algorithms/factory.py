@@ -9,6 +9,8 @@ from __future__ import annotations
 from typing import Any
 
 from afac_agent.domain.ports.algorithms import ClassificationAlgorithm, RecommendationAlgorithm
+from afac_agent.infrastructure.algorithms.classification.gcn import GCNAlgorithm
+from afac_agent.infrastructure.algorithms.classification.graphsage import GraphSAGEAlgorithm
 from afac_agent.infrastructure.algorithms.classification.label_propagation import LabelPropagationAlgorithm
 from afac_agent.infrastructure.algorithms.classification.logistic_regression import LogisticRegressionAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.cooc_popularity import CoocPopularityAlgorithm
@@ -18,6 +20,24 @@ from afac_agent.infrastructure.algorithms.recommendation.popularity import Popul
 def build_classification_algorithm(config: dict[str, Any]) -> ClassificationAlgorithm:
     """根据配置创建分类任务算法实现。"""
     kind = str(config.get("kind", "")).strip()
+    if kind == "gcn":
+        return GCNAlgorithm(
+            hidden_dim=int(config.get("hidden_dim", 64)),
+            dropout=float(config.get("dropout", 0.5)),
+            learning_rate=float(config.get("learning_rate", 0.01)),
+            weight_decay=float(config.get("weight_decay", 5.0e-4)),
+            epochs=int(config.get("epochs", 200)),
+            seed=int(config.get("seed", 42)),
+        )
+    if kind == "graphsage":
+        return GraphSAGEAlgorithm(
+            hidden_dim=int(config.get("hidden_dim", 64)),
+            dropout=float(config.get("dropout", 0.5)),
+            learning_rate=float(config.get("learning_rate", 0.01)),
+            weight_decay=float(config.get("weight_decay", 5.0e-4)),
+            epochs=int(config.get("epochs", 200)),
+            seed=int(config.get("seed", 42)),
+        )
     if kind == "label_propagation":
         return LabelPropagationAlgorithm(
             alpha=float(config.get("alpha", 0.9)),
@@ -44,4 +64,3 @@ def build_recommendation_algorithm(config: dict[str, Any]) -> RecommendationAlgo
             top_k=10,
         )
     raise ValueError(f"unknown recommendation algorithm kind: {kind!r}")
-
