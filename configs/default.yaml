@@ -74,6 +74,14 @@ search_space:
         learning_rate: 0.01
         weight_decay: 5.0e-4
         epochs: 200
+      - kind: graph_transformer
+        hidden_dim: 64
+        num_layers: 2
+        num_heads: 4
+        dropout: 0.5
+        learning_rate: 0.01
+        weight_decay: 5.0e-4
+        epochs: 200
     mutation_rules:
       label_propagation:
         alpha:
@@ -103,6 +111,23 @@ search_space:
       gcn:
         hidden_dim:
           values: [32, 64, 128]
+        dropout:
+          min: 0.0
+          max: 0.7
+          step: 0.1
+        learning_rate:
+          values: [0.001, 0.003, 0.01]
+        weight_decay:
+          values: [0.0, 5.0e-4, 1.0e-3]
+        epochs:
+          values: [100, 200, 300]
+      graph_transformer:
+        hidden_dim:
+          values: [32, 64, 128]
+        num_layers:
+          values: [1, 2, 3]
+        num_heads:
+          values: [2, 4, 8]
         dropout:
           min: 0.0
           max: 0.7

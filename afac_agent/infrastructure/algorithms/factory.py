@@ -10,6 +10,7 @@ from typing import Any
 
 from afac_agent.domain.ports.algorithms import ClassificationAlgorithm, RecommendationAlgorithm
 from afac_agent.infrastructure.algorithms.classification.gcn import GCNAlgorithm
+from afac_agent.infrastructure.algorithms.classification.graph_transformer import GraphTransformerAlgorithm
 from afac_agent.infrastructure.algorithms.classification.graphsage import GraphSAGEAlgorithm
 from afac_agent.infrastructure.algorithms.classification.label_propagation import LabelPropagationAlgorithm
 from afac_agent.infrastructure.algorithms.classification.logistic_regression import LogisticRegressionAlgorithm
@@ -47,6 +48,17 @@ def build_classification_algorithm(config: dict[str, Any]) -> ClassificationAlgo
         return LogisticRegressionAlgorithm(
             c=float(config.get("c", 1.0)),
             max_iter=int(config.get("max_iter", 200)),
+        )
+    if kind == "graph_transformer":
+        return GraphTransformerAlgorithm(
+            hidden_dim=int(config.get("hidden_dim", 64)),
+            num_layers=int(config.get("num_layers", 2)),
+            num_heads=int(config.get("num_heads", 4)),
+            dropout=float(config.get("dropout", 0.5)),
+            learning_rate=float(config.get("learning_rate", 0.01)),
+            weight_decay=float(config.get("weight_decay", 5.0e-4)),
+            epochs=int(config.get("epochs", 200)),
+            seed=int(config.get("seed", 42)),
         )
     raise ValueError(f"unknown classification algorithm kind: {kind!r}")
 

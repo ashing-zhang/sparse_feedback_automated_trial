@@ -9,6 +9,13 @@
 - allowed_candidates：允许的候选列表
 - mutation_rules：基于 best_solution 可变更的参数范围
 
+分类任务算法配置格式参考：
+- label_propagation: {"kind": "label_propagation", "alpha": float, "max_iter": int}
+- logistic_regression: {"kind": "logistic_regression", "c": float, "max_iter": int}
+- graphsage: {"kind": "graphsage", "hidden_dim": int, "dropout": float, "learning_rate": float, "weight_decay": float, "epochs": int}
+- gcn: {"kind": "gcn", "hidden_dim": int, "dropout": float, "learning_rate": float, "weight_decay": float, "epochs": int}
+- graph_transformer: {"kind": "graph_transformer", "hidden_dim": int, "num_layers": int, "num_heads": int, "dropout": float, "learning_rate": float, "weight_decay": float, "epochs": int}
+
 约束：
 - candidate 必须是一个 JSON object，可直接传入算法工厂。
 - 如果无法给出有效 candidate，必须选择 allowed_candidates 中的一个并说明 fallback 原因。

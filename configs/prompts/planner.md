@@ -10,6 +10,13 @@
 - remaining_budget: 剩余轮数等预算信息
 - failure_cases: 失败/异常总结
 
+分类任务算法特性参考：
+- label_propagation: 半监督传播算法，无需训练，适合低监督场景，计算快但表达能力有限
+- logistic_regression: 传统特征分类，仅使用节点特征，不利用图结构，可作为基线
+- graphsage: 图采样聚合算法，通过邻居聚合捕捉局部结构信息，适合稀疏图
+- gcn: 图卷积网络，基于谱方法的图卷积，适合稠密图与平滑信号
+- graph_transformer: 基于 Transformer 的图注意力模型，通过多头自注意力机制灵活捕捉节点间关系，适合复杂图结构和长距离依赖
+
 约束：
 - 必须串行执行，不允许并行实验。
 - 只能从“allowed_candidates”里选择，或基于 best_solution 在给定的“mutation_rules”范围内做小幅变体。
