@@ -2,7 +2,7 @@ run:
   seed: 42
   output_dir: outputs
   experiment:
-    max_trials: 10
+    max_trials: 20
     patience: 3
 
 llm:
@@ -50,18 +50,6 @@ data:
 search_space:
   classification:
     candidates:
-      - kind: label_propagation
-        max_iter: 50
-        alpha: 0.8
-      - kind: label_propagation
-        max_iter: 100
-        alpha: 0.9
-      - kind: logistic_regression
-        c: 1.0
-        max_iter: 200
-      - kind: logistic_regression
-        c: 4.0
-        max_iter: 300
       - kind: graphsage
         hidden_dim: 64
         dropout: 0.5
@@ -83,18 +71,6 @@ search_space:
         weight_decay: 5.0e-4
         epochs: 200
     mutation_rules:
-      label_propagation:
-        alpha:
-          min: 0.7
-          max: 0.95
-          step: 0.05
-        max_iter:
-          values: [50, 100, 150, 200]
-      logistic_regression:
-        c:
-          values: [0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
-        max_iter:
-          values: [100, 200, 300, 500]
       graphsage:
         hidden_dim:
           values: [32, 64, 128]
