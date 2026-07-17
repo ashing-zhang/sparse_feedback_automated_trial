@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import logging
+from pathlib import Path
 from typing import Any
 
 from afac_agent.application.services.llm_roles.role_agent import RoleAgent
@@ -29,6 +30,7 @@ class LLMExperimentPolicy(ExperimentPolicy):
     reviewer: RoleAgent
     improvement_threshold: float
     patience: int
+    agent_log_path: Path
 
     def propose_next_trial(
         self,
@@ -39,6 +41,7 @@ class LLMExperimentPolicy(ExperimentPolicy):
     ) -> TrialSpec:
         """基于上下文提出下一轮要执行的 trial 配置。"""
         tried = {_canon(x.get("candidate")) for x in state.experiment_history if isinstance(x, dict)}
+        round_num = int(state.remaining_budget.get("consumed_rounds", 0)) + 1
 
         planner_out = _safe_run(
             self.planner,
@@ -47,6 +50,13 @@ class LLMExperimentPolicy(ExperimentPolicy):
                 "allowed_candidates": allowed_candidates,
                 "mutation_rules": mutation_rules,
             },
+        )
+        _log_agent_output(
+            self.agent_log_path,
+            task_type=state.task_type,
+            round_num=round_num,
+            agent_name="planner",
+            output=planner_out,
         )
         if planner_out is None:
             stage = _heuristic_stage(state)
@@ -70,6 +80,13 @@ class LLMExperimentPolicy(ExperimentPolicy):
                 "mutation_rules": mutation_rules,
             },
         )
+        _log_agent_output(
+            self.agent_log_path,
+            task_type=state.task_type,
+            round_num=round_num,
+            agent_name="scientist",
+            output=scientist_out,
+        )
 
         engineer_out = _safe_run(
             self.engineer,
@@ -80,6 +97,13 @@ class LLMExperimentPolicy(ExperimentPolicy):
                 "allowed_candidates": allowed_candidates,
                 "mutation_rules": mutation_rules,
             },
+        )
+        _log_agent_output(
+            self.agent_log_path,
+            task_type=state.task_type,
+            round_num=round_num,
+            agent_name="engineer",
+            output=engineer_out,
         )
 
         candidate = None
@@ -109,6 +133,7 @@ class LLMExperimentPolicy(ExperimentPolicy):
         if heuristic[0]:
             return heuristic
 
+        round_num = int(state.remaining_budget.get("consumed_rounds", 0)) + 1
         reviewer_out = _safe_run(
             self.reviewer,
             {
@@ -118,6 +143,13 @@ class LLMExperimentPolicy(ExperimentPolicy):
                     "patience": self.patience,
                 },
             },
+        )
+        _log_agent_output(
+            self.agent_log_path,
+            task_type=state.task_type,
+            round_num=round_num,
+            agent_name="reviewer",
+            output=reviewer_out,
         )
         if reviewer_out is None:
             return False, "reviewer_unavailable"
@@ -215,4 +247,35 @@ def _heuristic_should_stop(
             return True, "patience_exhausted"
 
     return False, "continue"
+
+
+def _log_agent_output(
+    path: Path,
+    *,
+    task_type: str,
+    round_num: int,
+    agent_name: str,
+    output: dict[str, Any] | None,
+) -> None:
+    """将 agent 输出追加到 JSON 日志文件。"""
+    from datetime import datetime, timezone
+
+    entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "task_type": task_type,
+        "round": round_num,
+        "agent": agent_name,
+        "output": output,
+    }
+    try:
+        if path.exists():
+            with path.open("r", encoding="utf-8") as f:
+                logs = json.load(f)
+        else:
+            logs = []
+        logs.append(entry)
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(logs, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        logger.warning("Failed to write agent output log: %s", e)
 

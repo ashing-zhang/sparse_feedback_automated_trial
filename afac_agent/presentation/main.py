@@ -62,6 +62,7 @@ def main() -> int:
     scientist = RoleAgent(llm=llm, prompt_path=cfg.agent_prompts.scientist_path, prompt_loader=prompt_loader)
     engineer = RoleAgent(llm=llm, prompt_path=cfg.agent_prompts.engineer_path, prompt_loader=prompt_loader)
     reviewer = RoleAgent(llm=llm, prompt_path=cfg.agent_prompts.reviewer_path, prompt_loader=prompt_loader)
+    agent_log_path = cfg.run.output_dir / "agent_outputs.json"
     policy = LLMExperimentPolicy(
         planner=planner,
         scientist=scientist,
@@ -69,6 +70,7 @@ def main() -> int:
         reviewer=reviewer,
         improvement_threshold=cfg.controller.improvement_threshold,
         patience=cfg.run.experiment.patience,
+        agent_log_path=agent_log_path,
     )
     analyzer = TaskAnalyzer()
     memory = MemorySystem(store=experiment_store, config=cfg.memory)

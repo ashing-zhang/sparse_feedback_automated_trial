@@ -18,5 +18,6 @@ if [ "${1-}" != "" ]; then
   export AFAC_CONFIG_PATH="$1"
 fi
 
+rm -f outputs/agent_outputs.json
 python -m afac_agent.run
 
