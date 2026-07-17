@@ -69,15 +69,6 @@ def build_classification_algorithm(config: dict[str, Any]) -> ClassificationAlgo
 def build_recommendation_algorithm(config: dict[str, Any]) -> RecommendationAlgorithm:
     """根据配置创建推荐任务算法实现。"""
     kind = str(config.get("kind", "")).strip()
-    if kind == "popularity":
-        return PopularityAlgorithm(top_k=10)
-    if kind == "cooc_popularity":
-        return CoocPopularityAlgorithm(
-            cooc_window=int(config.get("cooc_window", 50)),
-            cooc_weight=float(config.get("cooc_weight", 1.0)),
-            popularity_weight=float(config.get("popularity_weight", 0.2)),
-            top_k=10,
-        )
     if kind == "gru4rec":
         return GRU4RecAlgorithm(
             hidden_dim=int(config.get("hidden_dim", 64)),
