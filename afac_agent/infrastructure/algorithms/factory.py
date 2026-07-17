@@ -14,11 +14,10 @@ from afac_agent.infrastructure.algorithms.classification.graph_transformer impor
 from afac_agent.infrastructure.algorithms.classification.graphsage import GraphSAGEAlgorithm
 from afac_agent.infrastructure.algorithms.classification.label_propagation import LabelPropagationAlgorithm
 from afac_agent.infrastructure.algorithms.classification.logistic_regression import LogisticRegressionAlgorithm
-from afac_agent.infrastructure.algorithms.recommendation.cooc_popularity import CoocPopularityAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.graph_transformer import GraphTransformerAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.gru4rec import GRU4RecAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.lightgcn import LightGCNAlgorithm
-from afac_agent.infrastructure.algorithms.recommendation.popularity import PopularityAlgorithm
+
 
 
 def build_classification_algorithm(config: dict[str, Any]) -> ClassificationAlgorithm:
