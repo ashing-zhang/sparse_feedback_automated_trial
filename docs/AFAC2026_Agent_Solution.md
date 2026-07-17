@@ -190,7 +190,8 @@ Agent 可以调整：
 
   模型               作用
   ------------------ ----------------
-  GRU4Rec            行为序列建模
+  GRU4Rec            行为序列建模（GRU）
+  BERT4Rec           行为序列建模（Transformer）
   LightGCN           用户-item交互图
   Graph Transformer  图结构Transformer
 
@@ -396,7 +397,8 @@ MLflow
 
 1.  LightGCN
 2.  Graph Transformer
-3.  GRU4Rec
+3.  BERT4Rec
+4.  GRU4Rec
 
 ## Agent优化重点
 

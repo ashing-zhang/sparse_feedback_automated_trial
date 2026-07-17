@@ -2,7 +2,7 @@ run:
   seed: 42
   output_dir: outputs
   experiment:
-    max_trials: 20
+    max_trials: 30
     patience: 3
 
 llm:
@@ -148,6 +148,15 @@ search_space:
         weight_decay: 5.0e-4
         epochs: 200
         patience: 5
+      - kind: bert4rec
+        hidden_dim: 64
+        num_layers: 2
+        num_heads: 4
+        dropout: 0.5
+        learning_rate: 0.01
+        weight_decay: 5.0e-4
+        epochs: 200
+        patience: 5
     mutation_rules:
       gru4rec:
         hidden_dim:
@@ -178,6 +187,25 @@ search_space:
         patience:
           values: [3, 5, 10]
       graph_transformer:
+        hidden_dim:
+          values: [32, 64, 128]
+        num_layers:
+          values: [1, 2, 3]
+        num_heads:
+          values: [2, 4, 8]
+        dropout:
+          min: 0.0
+          max: 0.7
+          step: 0.1
+        learning_rate:
+          values: [0.001, 0.003, 0.01]
+        weight_decay:
+          values: [0.0, 5.0e-4, 1.0e-3]
+        epochs:
+          values: [100, 200, 300]
+        patience:
+          values: [3, 5, 10]
+      bert4rec:
         hidden_dim:
           values: [32, 64, 128]
         num_layers:

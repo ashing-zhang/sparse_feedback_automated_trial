@@ -14,6 +14,7 @@ from afac_agent.infrastructure.algorithms.classification.graph_transformer impor
 from afac_agent.infrastructure.algorithms.classification.graphsage import GraphSAGEAlgorithm
 from afac_agent.infrastructure.algorithms.classification.label_propagation import LabelPropagationAlgorithm
 from afac_agent.infrastructure.algorithms.classification.logistic_regression import LogisticRegressionAlgorithm
+from afac_agent.infrastructure.algorithms.recommendation.bert4rec import BERT4RecAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.graph_transformer import GraphTransformerAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.gru4rec import GRU4RecAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.lightgcn import LightGCNAlgorithm
@@ -95,6 +96,19 @@ def build_recommendation_algorithm(config: dict[str, Any]) -> RecommendationAlgo
         )
     if kind == "graph_transformer":
         return GraphTransformerAlgorithm(
+            hidden_dim=int(config.get("hidden_dim", 64)),
+            num_layers=int(config.get("num_layers", 2)),
+            num_heads=int(config.get("num_heads", 4)),
+            dropout=float(config.get("dropout", 0.5)),
+            learning_rate=float(config.get("learning_rate", 0.01)),
+            weight_decay=float(config.get("weight_decay", 5.0e-4)),
+            epochs=int(config.get("epochs", 200)),
+            seed=int(config.get("seed", 42)),
+            top_k=10,
+            patience=int(config.get("patience", 5)),
+        )
+    if kind == "bert4rec":
+        return BERT4RecAlgorithm(
             hidden_dim=int(config.get("hidden_dim", 64)),
             num_layers=int(config.get("num_layers", 2)),
             num_heads=int(config.get("num_heads", 4)),
