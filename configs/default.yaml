@@ -24,8 +24,8 @@ agent_prompts:
 
 memory:
   mode: jsonl
-  recent_k: 30
-  long_term_k: 200
+  recent_k: 20
+  long_term_k: 20
 
 controller:
   explore_ratio: 0.3
