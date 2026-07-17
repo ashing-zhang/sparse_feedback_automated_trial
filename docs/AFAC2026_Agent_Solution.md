@@ -190,11 +190,9 @@ Agent 可以调整：
 
   模型               作用
   ------------------ ----------------
-  Popularity Model   冷启动baseline
-  ItemCF             序列相似
-  GRU4Rec            行为序列
-  LightGCN           用户-item图
-  Two Tower          特征匹配
+  GRU4Rec            行为序列建模
+  LightGCN           用户-item交互图
+  Graph Transformer  图结构Transformer
 
 ------------------------------------------------------------------------
 
@@ -397,8 +395,8 @@ MLflow
 优先级：
 
 1.  LightGCN
-2.  Sequence Model
-3.  Hybrid Ranking
+2.  Graph Transformer
+3.  GRU4Rec
 
 ## Agent优化重点
 

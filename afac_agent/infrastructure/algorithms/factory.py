@@ -15,6 +15,9 @@ from afac_agent.infrastructure.algorithms.classification.graphsage import GraphS
 from afac_agent.infrastructure.algorithms.classification.label_propagation import LabelPropagationAlgorithm
 from afac_agent.infrastructure.algorithms.classification.logistic_regression import LogisticRegressionAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.cooc_popularity import CoocPopularityAlgorithm
+from afac_agent.infrastructure.algorithms.recommendation.graph_transformer import GraphTransformerAlgorithm
+from afac_agent.infrastructure.algorithms.recommendation.gru4rec import GRU4RecAlgorithm
+from afac_agent.infrastructure.algorithms.recommendation.lightgcn import LightGCNAlgorithm
 from afac_agent.infrastructure.algorithms.recommendation.popularity import PopularityAlgorithm
 
 
@@ -73,6 +76,38 @@ def build_recommendation_algorithm(config: dict[str, Any]) -> RecommendationAlgo
             cooc_window=int(config.get("cooc_window", 50)),
             cooc_weight=float(config.get("cooc_weight", 1.0)),
             popularity_weight=float(config.get("popularity_weight", 0.2)),
+            top_k=10,
+        )
+    if kind == "gru4rec":
+        return GRU4RecAlgorithm(
+            hidden_dim=int(config.get("hidden_dim", 64)),
+            dropout=float(config.get("dropout", 0.5)),
+            learning_rate=float(config.get("learning_rate", 0.01)),
+            weight_decay=float(config.get("weight_decay", 5.0e-4)),
+            epochs=int(config.get("epochs", 200)),
+            seed=int(config.get("seed", 42)),
+            top_k=10,
+        )
+    if kind == "lightgcn":
+        return LightGCNAlgorithm(
+            hidden_dim=int(config.get("hidden_dim", 64)),
+            num_layers=int(config.get("num_layers", 2)),
+            learning_rate=float(config.get("learning_rate", 0.01)),
+            weight_decay=float(config.get("weight_decay", 5.0e-4)),
+            epochs=int(config.get("epochs", 200)),
+            seed=int(config.get("seed", 42)),
+            top_k=10,
+        )
+    if kind == "graph_transformer":
+        return GraphTransformerAlgorithm(
+            hidden_dim=int(config.get("hidden_dim", 64)),
+            num_layers=int(config.get("num_layers", 2)),
+            num_heads=int(config.get("num_heads", 4)),
+            dropout=float(config.get("dropout", 0.5)),
+            learning_rate=float(config.get("learning_rate", 0.01)),
+            weight_decay=float(config.get("weight_decay", 5.0e-4)),
+            epochs=int(config.get("epochs", 200)),
+            seed=int(config.get("seed", 42)),
             top_k=10,
         )
     raise ValueError(f"unknown recommendation algorithm kind: {kind!r}")
