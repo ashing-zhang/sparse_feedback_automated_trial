@@ -38,6 +38,7 @@ class GraphTransformerAlgorithm:
     epochs: int
     seed: int = 42
     top_k: int = 10
+    patience: int = 5
 
     def run(
         self,
@@ -84,7 +85,7 @@ class GraphTransformerAlgorithm:
         np.random.seed(int(self.seed))
 
         logger.info(
-            "GraphTransformer initialized hidden_dim=%d num_layers=%d num_heads=%d dropout=%.3f lr=%.6f weight_decay=%.6f epochs=%d",
+            "GraphTransformer initialized hidden_dim=%d num_layers=%d num_heads=%d dropout=%.3f lr=%.6f weight_decay=%.6f epochs=%d patience=%d",
             self.hidden_dim,
             self.num_layers,
             self.num_heads,
@@ -92,9 +93,13 @@ class GraphTransformerAlgorithm:
             self.learning_rate,
             self.weight_decay,
             self.epochs,
+            self.patience,
         )
 
         train_df = dataset.train
+        best_val_ndcg = 0.0
+        patience_counter = 0
+
         for epoch in range(int(self.epochs)):
             model.train()
             total_loss = 0.0
@@ -132,6 +137,31 @@ class GraphTransformerAlgorithm:
 
             if count > 0:
                 logger.info("GraphTransformer epoch=%d loss=%.6f", epoch + 1, total_loss / count)
+
+            if val_row_idx:
+                model.eval()
+                user_emb, item_emb = model()
+                targets, preds = _predict_for_rows(
+                    train_df,
+                    val_row_idx,
+                    user_to_idx,
+                    item_to_idx,
+                    items_all,
+                    user_emb,
+                    item_emb,
+                    self.top_k,
+                )
+                current_val_ndcg = ndcg_at_k_single_target(targets, preds, k=self.top_k)
+
+                if current_val_ndcg > best_val_ndcg:
+                    best_val_ndcg = current_val_ndcg
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                if patience_counter >= self.patience:
+                    logger.info("GraphTransformer early stopping at epoch=%d, best_val_ndcg@%d=%.6f", epoch + 1, self.top_k, best_val_ndcg)
+                    break
 
         model.eval()
 

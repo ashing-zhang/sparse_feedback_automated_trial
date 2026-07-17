@@ -106,6 +106,7 @@ class GraphTransformerAlgorithm:
     weight_decay: float
     epochs: int
     seed: int = 42
+    patience: int = 5
 
     def run(
         self,
@@ -149,6 +150,7 @@ class GraphTransformerAlgorithm:
                 learning_rate=float(self.learning_rate),
                 weight_decay=float(self.weight_decay),
                 seed=int(self.seed),
+                patience=int(self.patience),
             ),
             algorithm_name="GraphTransformer",
         )

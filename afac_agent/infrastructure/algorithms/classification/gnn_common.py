@@ -29,6 +29,7 @@ class GNNTrainingConfig:
     learning_rate: float
     weight_decay: float
     seed: int = 42
+    patience: int = 5
 
 
 def prepare_gcn_adjacency(adjacency: csr_matrix) -> csr_matrix:
@@ -123,6 +124,11 @@ def train_node_classifier(
     criterion = nn.CrossEntropyLoss()
     model = model.to(device)
 
+    best_val_acc = 0.0
+    best_epoch = 0
+    patience_counter = 0
+    val_idx_tensor = torch.as_tensor(np.asarray(val_idx, dtype=np.int64), dtype=torch.long, device=device) if val_idx else None
+
     for epoch in range(1, int(config.epochs) + 1):
         model.train()
         logits = model(features_tensor)
@@ -131,8 +137,28 @@ def train_node_classifier(
         loss.backward()
         optimizer.step()
 
-        if epoch == 1 or epoch == int(config.epochs) or epoch % 50 == 0:
+        if epoch == 1 or epoch % 50 == 0:
             logger.info("%s epoch=%d loss=%.6f", algorithm_name, epoch, float(loss.item()))
+
+        if val_idx_tensor is not None:
+            model.eval()
+            with torch.no_grad():
+                logits_val = model(features_tensor)
+                pred_val = logits_val.argmax(dim=1).cpu().numpy().astype(int)
+            y_true = [int(labels[i]) for i in val_idx]
+            y_pred = [int(pred_val[i]) for i in val_idx]
+            current_val_acc = accuracy(y_true, y_pred)
+
+            if current_val_acc > best_val_acc:
+                best_val_acc = current_val_acc
+                best_epoch = epoch
+                patience_counter = 0
+            else:
+                patience_counter += 1
+
+            if patience_counter >= config.patience:
+                logger.info("%s early stopping at epoch=%d, best_val_accuracy=%.6f", algorithm_name, epoch, best_val_acc)
+                break
 
     model.eval()
     with torch.no_grad():

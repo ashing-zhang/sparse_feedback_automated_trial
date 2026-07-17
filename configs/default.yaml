@@ -56,12 +56,14 @@ search_space:
         learning_rate: 0.01
         weight_decay: 5.0e-4
         epochs: 200
+        patience: 5
       - kind: gcn
         hidden_dim: 64
         dropout: 0.5
         learning_rate: 0.01
         weight_decay: 5.0e-4
         epochs: 200
+        patience: 5
       - kind: graph_transformer
         hidden_dim: 64
         num_layers: 2
@@ -70,6 +72,7 @@ search_space:
         learning_rate: 0.01
         weight_decay: 5.0e-4
         epochs: 200
+        patience: 5
     mutation_rules:
       graphsage:
         hidden_dim:
@@ -84,6 +87,8 @@ search_space:
           values: [0.0, 5.0e-4, 1.0e-3]
         epochs:
           values: [100, 200, 300]
+        patience:
+          values: [3, 5, 10]
       gcn:
         hidden_dim:
           values: [32, 64, 128]
@@ -97,6 +102,8 @@ search_space:
           values: [0.0, 5.0e-4, 1.0e-3]
         epochs:
           values: [100, 200, 300]
+        patience:
+          values: [3, 5, 10]
       graph_transformer:
         hidden_dim:
           values: [32, 64, 128]
@@ -114,6 +121,8 @@ search_space:
           values: [0.0, 5.0e-4, 1.0e-3]
         epochs:
           values: [100, 200, 300]
+        patience:
+          values: [3, 5, 10]
   recommendation:
     candidates:
       - kind: gru4rec
@@ -122,12 +131,14 @@ search_space:
         learning_rate: 0.01
         weight_decay: 5.0e-4
         epochs: 200
+        patience: 5
       - kind: lightgcn
         hidden_dim: 64
         num_layers: 2
         learning_rate: 0.01
         weight_decay: 5.0e-4
         epochs: 200
+        patience: 5
       - kind: graph_transformer
         hidden_dim: 64
         num_layers: 2
@@ -136,6 +147,7 @@ search_space:
         learning_rate: 0.01
         weight_decay: 5.0e-4
         epochs: 200
+        patience: 5
     mutation_rules:
       gru4rec:
         hidden_dim:
@@ -150,6 +162,8 @@ search_space:
           values: [0.0, 5.0e-4, 1.0e-3]
         epochs:
           values: [100, 200, 300]
+        patience:
+          values: [3, 5, 10]
       lightgcn:
         hidden_dim:
           values: [32, 64, 128]
@@ -161,6 +175,8 @@ search_space:
           values: [0.0, 5.0e-4, 1.0e-3]
         epochs:
           values: [100, 200, 300]
+        patience:
+          values: [3, 5, 10]
       graph_transformer:
         hidden_dim:
           values: [32, 64, 128]
@@ -178,6 +194,8 @@ search_space:
           values: [0.0, 5.0e-4, 1.0e-3]
         epochs:
           values: [100, 200, 300]
+        patience:
+          values: [3, 5, 10]
 
 submission:
   a1_filename: A1.csv

@@ -35,6 +35,7 @@ class GRU4RecAlgorithm:
     epochs: int
     seed: int = 42
     top_k: int = 10
+    patience: int = 5
 
     def run(
         self,
@@ -63,15 +64,19 @@ class GRU4RecAlgorithm:
         np.random.seed(int(self.seed))
 
         logger.info(
-            "GRU4Rec initialized hidden_dim=%d dropout=%.3f lr=%.6f weight_decay=%.6f epochs=%d",
+            "GRU4Rec initialized hidden_dim=%d dropout=%.3f lr=%.6f weight_decay=%.6f epochs=%d patience=%d",
             self.hidden_dim,
             self.dropout,
             self.learning_rate,
             self.weight_decay,
             self.epochs,
+            self.patience,
         )
 
         train_df = dataset.train
+        best_val_ndcg = 0.0
+        patience_counter = 0
+
         for epoch in range(int(self.epochs)):
             model.train()
             total_loss = 0.0
@@ -101,6 +106,28 @@ class GRU4RecAlgorithm:
 
             if count > 0:
                 logger.info("GRU4Rec epoch=%d loss=%.6f", epoch + 1, total_loss / count)
+
+            if val_row_idx:
+                model.eval()
+                targets, preds = _predict_for_rows(
+                    train_df,
+                    val_row_idx,
+                    item_to_idx,
+                    items_all,
+                    model,
+                    self.top_k,
+                )
+                current_val_ndcg = ndcg_at_k_single_target(targets, preds, k=self.top_k)
+
+                if current_val_ndcg > best_val_ndcg:
+                    best_val_ndcg = current_val_ndcg
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                if patience_counter >= self.patience:
+                    logger.info("GRU4Rec early stopping at epoch=%d, best_val_ndcg@%d=%.6f", epoch + 1, self.top_k, best_val_ndcg)
+                    break
 
         model.eval()
 

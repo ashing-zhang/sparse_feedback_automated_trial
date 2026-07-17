@@ -35,6 +35,7 @@ class LightGCNAlgorithm:
     epochs: int
     seed: int = 42
     top_k: int = 10
+    patience: int = 5
 
     def run(
         self,
@@ -78,14 +79,20 @@ class LightGCNAlgorithm:
         torch.manual_seed(int(self.seed))
         np.random.seed(int(self.seed))
 
+        train_df = dataset.train
+
         logger.info(
-            "LightGCN initialized hidden_dim=%d num_layers=%d lr=%.6f weight_decay=%.6f epochs=%d",
+            "LightGCN initialized hidden_dim=%d num_layers=%d lr=%.6f weight_decay=%.6f epochs=%d patience=%d",
             self.hidden_dim,
             self.num_layers,
             self.learning_rate,
             self.weight_decay,
             self.epochs,
+            self.patience,
         )
+
+        best_val_ndcg = 0.0
+        patience_counter = 0
 
         for epoch in range(int(self.epochs)):
             model.train()
@@ -127,8 +134,32 @@ class LightGCNAlgorithm:
             if count > 0:
                 logger.info("LightGCN epoch=%d loss=%.6f", epoch + 1, total_loss / count)
 
-        model.eval()
+            if val_row_idx:
+                model.eval()
+                user_emb, item_emb = model.get_embeddings()
+                targets, preds = _predict_for_rows(
+                    train_df,
+                    val_row_idx,
+                    user_to_idx,
+                    item_to_idx,
+                    items_all,
+                    user_emb,
+                    item_emb,
+                    self.top_k,
+                )
+                current_val_ndcg = ndcg_at_k_single_target(targets, preds, k=self.top_k)
 
+                if current_val_ndcg > best_val_ndcg:
+                    best_val_ndcg = current_val_ndcg
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                if patience_counter >= self.patience:
+                    logger.info("LightGCN early stopping at epoch=%d, best_val_ndcg@%d=%.6f", epoch + 1, self.top_k, best_val_ndcg)
+                    break
+
+        model.eval()
         user_emb, item_emb = model.get_embeddings()
 
         val_ndcg: float | None = None
@@ -265,9 +296,6 @@ def _normalize_adjacency(adj: csr_matrix) -> torch.Tensor:
     indices = torch.tensor([coo.row, coo.col], dtype=torch.long)
     values = torch.tensor(coo.data, dtype=torch.float32)
     return torch.sparse_coo_tensor(indices, values, adj_norm.shape)
-
-
-train_df: pd.DataFrame
 
 
 def _predict_for_rows(

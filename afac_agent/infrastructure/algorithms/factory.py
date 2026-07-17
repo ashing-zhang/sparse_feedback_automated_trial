@@ -31,6 +31,7 @@ def build_classification_algorithm(config: dict[str, Any]) -> ClassificationAlgo
             weight_decay=float(config.get("weight_decay", 5.0e-4)),
             epochs=int(config.get("epochs", 200)),
             seed=int(config.get("seed", 42)),
+            patience=int(config.get("patience", 5)),
         )
     if kind == "graphsage":
         return GraphSAGEAlgorithm(
@@ -40,6 +41,7 @@ def build_classification_algorithm(config: dict[str, Any]) -> ClassificationAlgo
             weight_decay=float(config.get("weight_decay", 5.0e-4)),
             epochs=int(config.get("epochs", 200)),
             seed=int(config.get("seed", 42)),
+            patience=int(config.get("patience", 5)),
         )
     if kind == "label_propagation":
         return LabelPropagationAlgorithm(
@@ -61,6 +63,7 @@ def build_classification_algorithm(config: dict[str, Any]) -> ClassificationAlgo
             weight_decay=float(config.get("weight_decay", 5.0e-4)),
             epochs=int(config.get("epochs", 200)),
             seed=int(config.get("seed", 42)),
+            patience=int(config.get("patience", 5)),
         )
     raise ValueError(f"unknown classification algorithm kind: {kind!r}")
 
@@ -77,6 +80,7 @@ def build_recommendation_algorithm(config: dict[str, Any]) -> RecommendationAlgo
             epochs=int(config.get("epochs", 200)),
             seed=int(config.get("seed", 42)),
             top_k=10,
+            patience=int(config.get("patience", 5)),
         )
     if kind == "lightgcn":
         return LightGCNAlgorithm(
@@ -87,6 +91,7 @@ def build_recommendation_algorithm(config: dict[str, Any]) -> RecommendationAlgo
             epochs=int(config.get("epochs", 200)),
             seed=int(config.get("seed", 42)),
             top_k=10,
+            patience=int(config.get("patience", 5)),
         )
     if kind == "graph_transformer":
         return GraphTransformerAlgorithm(
@@ -99,5 +104,6 @@ def build_recommendation_algorithm(config: dict[str, Any]) -> RecommendationAlgo
             epochs=int(config.get("epochs", 200)),
             seed=int(config.get("seed", 42)),
             top_k=10,
+            patience=int(config.get("patience", 5)),
         )
     raise ValueError(f"unknown recommendation algorithm kind: {kind!r}")
