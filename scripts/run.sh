@@ -1,9 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # 运行指南：
 # 1) （可选）复制 .env.example 为 .env 并按需修改
 # 2) 运行：
-#    sh scripts/run.sh
+#    bash scripts/run.sh
 # 3) 输出位于 outputs/（prediction.zip / A1.csv / A2.csv / experiments.jsonl）
 
 set -eu

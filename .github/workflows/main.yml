@@ -1,1 +1,66 @@
+name: Deploy and Run AFAC Agent
 
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Config file path (optional)'
+        required: false
+        default: ''
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-and-run:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: bash scripts/install.sh
+
+      - name: Create outputs directory
+        run: mkdir -p outputs
+
+      - name: Create .env file from secrets
+        run: |
+          cat > .env << 'EOF'
+          LLM_API_KEY=${{ secrets.LLM_API_KEY }}
+          EOF
+
+      - name: Run agent
+        run: |
+          if [ "${{ github.event.inputs.config_path }}" != "" ]; then
+            bash scripts/run.sh "${{ github.event.inputs.config_path }}"
+          else
+            bash scripts/run.sh
+          fi
+
+      - name: Upload outputs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agent-outputs
+          path: outputs/
+          retention-days: 7
+
+      - name: Clean up secrets
+        if: always()
+        run: rm -f .env
